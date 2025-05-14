@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Çarkı Çevir</title>
+  <style>
+    body { text-align: center; font-family: sans-serif; padding: 50px; }
+    #wheel { width: 300px; height: 300px; margin: auto; border-radius: 50%; border: 8px solid #444; position: relative; }
+    .segment { width: 50%; height: 50%; position: absolute; background: #ccc; transform-origin: 100% 100%; clip-path: polygon(100% 100%, 0% 100%, 100% 0); }
+    #pointer { margin: 20px auto; width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 30px solid red; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+    #result { margin-top: 20px; font-size: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Çarkı Çevir!</h1>
+  <div id="pointer"></div>
+  <div id="wheel"></div>
+  <button onclick="spinWheel()">Çevir</button>
+  <div id="result"></div>
+
+  <script>
+    const options = ["Hediye 1", "Hediye 2", "Hediye 3", "Hediye Yok", "Çekilişe Katıl", "Sürpriz"];
+    const wheel = document.getElementById("wheel");
+    
+    function drawWheel() {
+      for (let i = 0; i < options.length; i++) {
+        const segment = document.createElement("div");
+        segment.className = "segment";
+        segment.style.transform = `rotate(${(360 / options.length) * i}deg)`;
+        segment.style.background = `hsl(${(360 / options.length) * i}, 70%, 60%)`;
+        wheel.appendChild(segment);
+      }
+    }
+
+    function spinWheel() {
+      const randomDeg = 360 * 3 + Math.floor(Math.random() * 360);
+      wheel.style.transition = "transform 4s ease-out";
+      wheel.style.transform = `rotate(${randomDeg}deg)`;
+
+      const selected = options[Math.floor(((360 - (randomDeg % 360)) % 360) / (360 / options.length))];
+      
+      setTimeout(() => {
+        document.getElementById("result").innerText = "Sonuç: " + selected;
+      }, 4000);
+    }
+
+    drawWheel();
+  </script>
+</body>
+</html>
