@@ -1,114 +1,116 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Çarkı Çevir</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Çarkıfelek</title>
   <style>
     body {
-      text-align: center;
       font-family: Arial, sans-serif;
-      background: #fdf6f0;
-      padding-top: 40px;
+      text-align: center;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
     }
 
-    #pointer {
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-bottom: 25px solid #e07a5f;
-      margin: 10px auto;
-    }
-
-    #wheel {
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      border: 8px solid #555;
-      margin: 0 auto;
-      position: relative;
-      transition: transform 4s ease-out;
-    }
-
-    .segment {
-      position: absolute;
-      width: 50%;
-      height: 50%;
-      top: 50%;
-      left: 50%;
-      transform-origin: 0% 0%;
-      clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #333;
-      font-size: 14px;
-      font-weight: bold;
+    canvas {
+      margin-top: 40px;
     }
 
     #spin {
-      margin-top: 30px;
+      margin-top: 20px;
       padding: 10px 20px;
       font-size: 18px;
-      background-color: #f4d6cc;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
+      background-color: #cccccc;
       cursor: pointer;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
     }
   </style>
 </head>
 <body>
-
-  <h1>Çarkı Çevir!</h1>
-  <div id="pointer"></div>
-  <div id="wheel"></div>
+  <h2>Çarkı Çevir!</h2>
+  <canvas id="wheel" width="500" height="500"></canvas>
+  <br/>
   <button id="spin">Çevir</button>
-  <div id="result"></div>
 
   <script>
-    const options = ['STUBBORN', 'GENEROUS', 'CUTE', 'PUNCTUAL', 'EASY GOİNG', 'SMART'];
-    const colors = ['#f6e2d3', '#fbe4d8', '#f9dbbd', '#e8cfc2', '#d5b9b2', '#f4d6cc'];
-    const wheel = document.getElementById('wheel');
-    const result = document.getElementById('result');
-    let rotation = 0;
+    const options = ["SMART", "STUBBORN", "GENEROUS", "CUTE", "PUNCTUAL", "EASY GOING"];
+    const colors = ["#A7C7E7", "#F7C6D9", "#FFF3B0", "#B8E2C8", "#D8B4E2", "#A3BFD9"]; // pastel renkler
+
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const size = canvas.width;
+    const center = size / 2;
+    const numOptions = options.length;
+    const arc = (2 * Math.PI) / numOptions;
+    let angle = 0;
+    let spinAngle = 0;
 
     function drawWheel() {
-      wheel.innerHTML = '';
-      const slice = 360 / options.length;
+      for (let i = 0; i < numOptions; i++) {
+        const start = angle + i * arc;
+        const end = start + arc;
 
-      options.forEach((option, i) => {
-        const segment = document.createElement('div');
-        segment.className = 'segment';
-        segment.style.transform = `rotate(${i * slice}deg)`;
-        segment.style.backgroundColor = colors[i % colors.length];
-        segment.innerHTML = `<div style="transform: rotate(${slice / 2}deg); width: 100px;">${option}</div>`;
-        wheel.appendChild(segment);
-      });
+        ctx.beginPath();
+        ctx.moveTo(center, center);
+        ctx.arc(center, center, center - 10, start, end);
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+        ctx.stroke();
+
+        // Yazı
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.rotate(start + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "white";
+        ctx.font = "bold 18px sans-serif";
+        ctx.fillText(options[i], center - 20, 10);
+        ctx.restore();
+      }
+
+      // Göbek
+      ctx.beginPath();
+      ctx.arc(center, center, 40, 0, 2 * Math.PI);
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
+
+      // Ok
+      ctx.beginPath();
+      ctx.moveTo(center - 10, 10);
+      ctx.lineTo(center + 10, 10);
+      ctx.lineTo(center, 40);
+      ctx.closePath();
+      ctx.fillStyle = "#333";
+      ctx.fill();
+    }
+
+    function rotateWheel() {
+      const spin = Math.random() * 360 + 720; // en az 2 tur
+      const start = performance.now();
+
+      function animate(time) {
+        const elapsed = time - start;
+        spinAngle = spin * (1 - Math.exp(-elapsed / 800)); // easing
+        ctx.clearRect(0, 0, size, size);
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.rotate((spinAngle * Math.PI) / 180);
+        ctx.translate(-center, -center);
+        drawWheel();
+        ctx.restore();
+
+        if (spinAngle < spin) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      requestAnimationFrame(animate);
     }
 
     drawWheel();
-
-    document.getElementById('spin').addEventListener('click', () => {
-      const slice = 360 / options.length;
-      const randomIndex = Math.floor(Math.random() * options.length);
-      const spins = 5;
-      const finalDeg = 360 * spins + (360 - randomIndex * slice - slice / 2);
-      rotation += finalDeg;
-
-      wheel.style.transform = `rotate(${rotation}deg)`;
-
-      setTimeout(() => {
-        result.textContent = `Kazanan: ${options[randomIndex]}`;
-      }, 4000);
-    });
+    document.getElementById("spin").addEventListener("click", rotateWheel);
   </script>
-
 </body>
 </html>
