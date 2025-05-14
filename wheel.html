@@ -6,56 +6,66 @@
   <style>
     body {
       text-align: center;
-      font-family: Arial;
-      padding-top: 50px;
-      background: #f0f0f0;
+      font-family: Arial, sans-serif;
+      background: #fdf6f0;
+      padding-top: 40px;
     }
+
     #pointer {
       width: 0;
       height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 30px solid red;
-      margin: 20px auto;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 25px solid #e07a5f;
+      margin: 10px auto;
     }
+
     #wheel {
       width: 300px;
       height: 300px;
       border-radius: 50%;
-      border: 10px solid #333;
+      border: 8px solid #555;
       margin: 0 auto;
       position: relative;
-      overflow: hidden;
-      transform: rotate(0deg);
+      transition: transform 4s ease-out;
     }
+
     .segment {
       position: absolute;
       width: 50%;
       height: 50%;
-      left: 50%;
       top: 50%;
+      left: 50%;
       transform-origin: 0% 0%;
       clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      color: #333;
       font-size: 14px;
-      color: #fff;
       font-weight: bold;
     }
+
     #spin {
-      margin-top: 20px;
+      margin-top: 30px;
       padding: 10px 20px;
-      font-size: 20px;
+      font-size: 18px;
+      background-color: #f4d6cc;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
+
     #result {
       margin-top: 20px;
-      font-size: 24px;
+      font-size: 20px;
       font-weight: bold;
+      color: #333;
     }
   </style>
 </head>
 <body>
+
   <h1>Çarkı Çevir!</h1>
   <div id="pointer"></div>
   <div id="wheel"></div>
@@ -64,42 +74,41 @@
 
   <script>
     const options = ['STUBBORN', 'GENEROUS', 'CUTE', 'PUNCTUAL', 'EASY GOİNG', 'SMART'];
+    const colors = ['#f6e2d3', '#fbe4d8', '#f9dbbd', '#e8cfc2', '#d5b9b2', '#f4d6cc'];
     const wheel = document.getElementById('wheel');
     const result = document.getElementById('result');
-    const spinBtn = document.getElementById('spin');
-    let currentRotation = 0;
+    let rotation = 0;
 
     function drawWheel() {
       wheel.innerHTML = '';
-      const count = options.length;
-      for (let i = 0; i < count; i++) {
+      const slice = 360 / options.length;
+
+      options.forEach((option, i) => {
         const segment = document.createElement('div');
-        const angle = (360 / count) * i;
-        const color = `hsl(${i * 60}, 70%, 50%)`;
         segment.className = 'segment';
-        segment.style.backgroundColor = color;
-        segment.style.transform = `rotate(${angle}deg) skewY(-60deg)`;
-        segment.innerHTML = `<div style="transform: skewY(60deg) rotate(-${angle}deg); width: 100px;">${options[i]}</div>`;
+        segment.style.transform = `rotate(${i * slice}deg)`;
+        segment.style.backgroundColor = colors[i % colors.length];
+        segment.innerHTML = `<div style="transform: rotate(${slice / 2}deg); width: 100px;">${option}</div>`;
         wheel.appendChild(segment);
-      }
+      });
     }
 
     drawWheel();
 
-    spinBtn.addEventListener('click', () => {
-      const segmentAngle = 360 / options.length;
+    document.getElementById('spin').addEventListener('click', () => {
+      const slice = 360 / options.length;
       const randomIndex = Math.floor(Math.random() * options.length);
-      const extraSpins = 5;
-      const targetRotation = 360 * extraSpins + (360 - randomIndex * segmentAngle - segmentAngle / 2);
-      currentRotation += targetRotation;
+      const spins = 5;
+      const finalDeg = 360 * spins + (360 - randomIndex * slice - slice / 2);
+      rotation += finalDeg;
 
-      wheel.style.transition = 'transform 4s ease-out';
-      wheel.style.transform = `rotate(${currentRotation}deg)`;
+      wheel.style.transform = `rotate(${rotation}deg)`;
 
       setTimeout(() => {
         result.textContent = `Kazanan: ${options[randomIndex]}`;
       }, 4000);
     });
   </script>
+
 </body>
 </html>
