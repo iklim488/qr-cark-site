@@ -1,116 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Çarkıfelek</title>
+  <title>Çarkı Çevir</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      background-color: #f8f8f8;
-      margin: 0;
-      padding: 0;
+      background-color: #fefefe;
     }
-
-    canvas {
-      margin-top: 40px;
+    h1 {
+      margin-top: 30px;
     }
-
-    #spin {
+    #wheelCanvas {
+      margin-top: 20px;
+      width: 300px;
+      height: 300px;
+    }
+    #spinBtn {
       margin-top: 20px;
       padding: 10px 20px;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      background-color: #cccccc;
-      cursor: pointer;
+      font-size: 16px;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    #arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 25px solid black;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 165px;
+      z-index: 10;
+    }
+    .wheel-container {
+      position: relative;
+      display: inline-block;
     }
   </style>
 </head>
 <body>
-  <h2>Çarkı Çevir!</h2>
-  <canvas id="wheel" width="500" height="500"></canvas>
-  <br/>
-  <button id="spin">Çevir</button>
+  <h1>Çarkı Çevir!</h1>
+  <div class="wheel-container">
+    <div id="arrow"></div>
+    <canvas id="wheelCanvas" width="300" height="300"></canvas>
+  </div>
+  <br>
+  <button id="spinBtn">Çevir</button>
+  <div id="result"></div>
 
   <script>
-    const options = ["SMART", "STUBBORN", "GENEROUS", "CUTE", "PUNCTUAL", "EASY GOING"];
-    const colors = ["#A7C7E7", "#F7C6D9", "#FFF3B0", "#B8E2C8", "#D8B4E2", "#A3BFD9"]; // pastel renkler
-
-    const canvas = document.getElementById("wheel");
-    const ctx = canvas.getContext("2d");
-    const size = canvas.width;
-    const center = size / 2;
-    const numOptions = options.length;
-    const arc = (2 * Math.PI) / numOptions;
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const segments = ['SMART', 'STUBBORN', 'GENEROUS', 'CUTE', 'PUNCTUAL', 'EASY GOING'];
+    const colors = ['#A0C4FF', '#FFADAD', '#FDFFB6', '#CAFFBF', '#D0BFFF', '#BDB2FF']; // pastel tonlar
+    const segmentAngle = 2 * Math.PI / segments.length;
     let angle = 0;
-    let spinAngle = 0;
+    let spinning = false;
 
     function drawWheel() {
-      for (let i = 0; i < numOptions; i++) {
-        const start = angle + i * arc;
-        const end = start + arc;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const radius = canvas.width / 2;
+
+      for (let i = 0; i < segments.length; i++) {
+        const startAngle = angle + i * segmentAngle;
+        const endAngle = startAngle + segmentAngle;
 
         ctx.beginPath();
-        ctx.moveTo(center, center);
-        ctx.arc(center, center, center - 10, start, end);
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, startAngle, endAngle);
         ctx.fillStyle = colors[i];
         ctx.fill();
         ctx.stroke();
 
-        // Yazı
         ctx.save();
-        ctx.translate(center, center);
-        ctx.rotate(start + arc / 2);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "white";
-        ctx.font = "bold 18px sans-serif";
-        ctx.fillText(options[i], center - 20, 10);
+        ctx.translate(radius, radius);
+        ctx.rotate(startAngle + segmentAngle / 2);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText(segments[i], radius - 10, 5);
         ctx.restore();
       }
-
-      // Göbek
-      ctx.beginPath();
-      ctx.arc(center, center, 40, 0, 2 * Math.PI);
-      ctx.fillStyle = "#ffffff";
-      ctx.fill();
-
-      // Ok
-      ctx.beginPath();
-      ctx.moveTo(center - 10, 10);
-      ctx.lineTo(center + 10, 10);
-      ctx.lineTo(center, 40);
-      ctx.closePath();
-      ctx.fillStyle = "#333";
-      ctx.fill();
-    }
-
-    function rotateWheel() {
-      const spin = Math.random() * 360 + 720; // en az 2 tur
-      const start = performance.now();
-
-      function animate(time) {
-        const elapsed = time - start;
-        spinAngle = spin * (1 - Math.exp(-elapsed / 800)); // easing
-        ctx.clearRect(0, 0, size, size);
-        ctx.save();
-        ctx.translate(center, center);
-        ctx.rotate((spinAngle * Math.PI) / 180);
-        ctx.translate(-center, -center);
-        drawWheel();
-        ctx.restore();
-
-        if (spinAngle < spin) {
-          requestAnimationFrame(animate);
-        }
-      }
-
-      requestAnimationFrame(animate);
     }
 
     drawWheel();
-    document.getElementById("spin").addEventListener("click", rotateWheel);
+
+    document.getElementById('spinBtn').addEventListener('click', () => {
+      if (spinning) return;
+      spinning = true;
+      let spinAngle = Math.random() * 2000 + 2000;
+      const spinSpeed = 10;
+      let current = 0;
+
+      const interval = setInterval(() => {
+        current += spinSpeed;
+        angle += spinSpeed * Math.PI / 180;
+        drawWheel();
+        if (current >= spinAngle) {
+          clearInterval(interval);
+          spinning = false;
+
+          // Sonucu bul
+          const correctedAngle = (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI);
+          const index = Math.floor(correctedAngle / segmentAngle) % segments.length;
+          document.getElementById('result').textContent = `Sonuç: ${segments[index]}`;
+        }
+      }, 10);
+    });
   </script>
 </body>
 </html>
