@@ -25,17 +25,17 @@
       margin-top: 20px;
     }
     #arrow {
-      position: absolute;
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-bottom: 25px solid #222;
-      left: 50%;
-      transform: translateX(-50%);
-      top: -10px;
-      z-index: 10;
-    }
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 50px solid #111;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -20px;
+  z-index: 10;
+}
     canvas {
       border-radius: 50%;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
@@ -71,7 +71,7 @@
     const canvas = document.getElementById('wheelCanvas');
     const ctx = canvas.getContext('2d');
     const segments = ['SMART', 'STUBBORN', 'GENEROUS', 'CUTE', 'PUNCTUAL', 'EASY GOING'];
-    const colors = ['#A0C4FF', '#FFADAD', '#FDFFB6', '#CAFFBF', '#D0BFFF', '#BDB2FF'];
+    const colors = ["#A7C7E7", "#F7C6D9", "#FFF3B0", "#B8E2C8", "#D8B4E2", "#A3BFD9"];
     const segmentAngle = 2 * Math.PI / segments.length;
     let angle = 0;
     let spinning = false;
