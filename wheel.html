@@ -24,16 +24,16 @@
       position: relative;
       margin-top: 20px;
     }
-  #arrow {
+ #arrow {
   position: absolute;
+  top: -40px; /* Çarkın biraz üstünde durur */
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 0;
   border-left: 25px solid transparent;
   border-right: 25px solid transparent;
-  border-bottom: 50px solid #111; /* Ucu aşağı bakan ok */
-  top: -60px; /* Ok çarkın üstünde olacak */
-  left: 50%;
-  transform: translateX(-50%);
+  border-top: 40px solid #111; /* Ters üçgenin aşağıya bakan ucu */
   z-index: 10;
 }
     canvas {
