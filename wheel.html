@@ -24,16 +24,16 @@
       position: relative;
       margin-top: 20px;
     }
-    #arrow {
+   #arrow {
   position: absolute;
   width: 0;
   height: 0;
   border-left: 25px solid transparent;
   border-right: 25px solid transparent;
-  border-bottom: 50px solid #111;
+  border-top: 50px solid #111; /* Bu satırı border-bottom yerine kullan */
   left: 50%;
   transform: translateX(-50%);
-  top: -20px;
+  bottom: -20px; /* Çarkın altına gelecek şekilde konumlandıralım */
   z-index: 10;
 }
     canvas {
